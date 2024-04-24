@@ -68,6 +68,10 @@ export function getUsername(id: string): string | undefined {
     return undefined;
 }
 
+export function userExists(username: string): boolean {
+    return users.has(username);
+}
+
 export function logoutAllUsers() {
     loggedIn.clear();
 }

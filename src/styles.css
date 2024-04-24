@@ -1,0 +1,75 @@
+button.default {
+    background-color: var(--dark);
+    color: var(--light);
+    border: none;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 1.25rem;
+    transition: 0.2s;
+}
+
+button.default:hover {
+    background-color: var(--bg-1);
+    color: var(--dark);
+    transform: scale(1.025);
+}
+
+button.danger {
+    background-color: var(--dark);
+    color: var(--light);
+    border: none;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 1.25rem;
+    transition: 0.2s;
+}
+
+button.danger:hover {
+    background-color: var(--warn);
+    transform: scale(1.025);
+}
+
+button.text {
+    text-decoration: none;
+    background-color: transparent;
+    border: none;
+    padding: 6px 6px;
+    text-align: center;
+    display: inline-block;
+    font-size: 1rem;
+    color: var(--light);
+    transition: 0.2s;
+}
+
+button.text:hover {
+    text-decoration: underline;
+    color: var(--bg-6);
+}
+
+input[type=text].default {
+    width: 100%;
+    padding: 12px 12px;
+    box-sizing: border-box;
+    border: 1px solid var(--bg-6);
+    border-radius: 4px;
+}
+
+input[type=text].default:focus {
+    outline: var(--dark) solid 2px;
+}
+
+input[type=password].default {
+    width: 100%;
+    padding: 12px 20px;
+    box-sizing: border-box;
+    border: 1px solid var(--bg-6);
+    border-radius: 4px;
+}
+
+input[type=password].default:focus {
+    outline: var(--dark) solid 2px;
+}

@@ -1,25 +1,19 @@
 <script lang="ts">
+	import '../styles.css';
 	import { Navbar } from '$lib/components';
 
 	export let data;
 
-	const menu_items = [
+	let menu_items = [
 		{ name: 'Vote', url: '/vote' },
 		{ name: 'Results', url: '/results' }
 	];
 	if (data.userLoggedIn) {
 		menu_items.push({ name: 'Logout', url: '/logout' });
-	} else {
-		menu_items.push({ name: 'Login', url: '/login' });
-	}
-	if (data.adminLoggedIn) {
-		menu_items.push({ name: 'Admin Logout', url: '/logout/admin' });
-	} else {
-		menu_items.push({ name: 'Admin Panel', url: '/admin' });
 	}
 </script>
 
-<Navbar {menu_items} />
+<Navbar bind:menu_items />
 
 <slot />
 
@@ -34,11 +28,11 @@
 		--bg-6: #555555;
 		--dark: #222222;
 		--light: #ebebeb;
+		--warn: #ff0f0f;
 	}
 
 	:global(*) {
 		font-family: 'Poppins', sans-serif;
-		color: var(--light);
 	}
 
 	:global(body) {

@@ -2,7 +2,7 @@
 	import { dndzone, type DndEvent, type Item } from 'svelte-dnd-action';
 	import { flip } from 'svelte/animate';
 	import { UserVote } from '$lib/components';
-	import { countries, type CountryISO } from '$lib/countries';
+	import { countries, getCountryName, type CountryISO } from '$lib/countries';
 
 	const flipDurationMs: number = 200;
 
@@ -55,9 +55,14 @@
 		use:dndzone={{ items, flipDurationMs, transformDraggedElement }}
 		on:consider={handleSort}
 		on:finalize={handleFinalize}
+		aria-label="List of participating countries"
 	>
 		{#each items as item (item.id)}
-			<div class="item-container" animate:flip={{ duration: flipDurationMs }}>
+			<div
+				class="item-container"
+				animate:flip={{ duration: flipDurationMs }}
+				aria-label="Flag of {getCountryName(item.country, 'en')}"
+			>
 				<svelte:component this={UserVote} country={item.country} rank={item.rank} />
 			</div>
 		{/each}

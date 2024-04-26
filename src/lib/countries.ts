@@ -1,3 +1,7 @@
+export const countries: CountryISO[] = ["Al", "Am", "Au", "At", "Az", "Be", "Hr", "Cy", "Cz",
+    "Dk", "Ee", "Fi", "Fr", "Ge", "De", "Gr", "Is", "Ie", "Il", "It", "Lv", "Lt", "Lu",
+    "Mt", "Md", "Nl", "No", "Pl", "Pt", "Sm", "Rs", "Sl", "Es", "Se", "Ch", "Ua", "Gb"];
+
 export type CountryISO = "Al" | "Am" | "Au" | "At" | "Az" | "Be" | "Hr" | "Cy" | "Cz" | "Dk" | "Ee" |
     "Fi" | "Fr" | "Ge" | "De" | "Gr" | "Is" | "Ie" | "Il" | "It" | "Lv" | "Lt" | "Lu" | "Mt" | "Md" |
     "Nl" | "No" | "Pl" | "Pt" | "Sm" | "Rs" | "Sl" | "Es" | "Se" | "Ch" | "Ua" | "Gb";

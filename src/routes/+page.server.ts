@@ -20,7 +20,7 @@ export const actions = {
         }
 
         if (data.has('pin') && data.get('pin') !== '') {
-            if (!(data.get('pin') as string).match("/^[0-9]+$/g")) {
+        if (!/^[0-9]+$/.test(data.get('pin') as string ?? '')) {
                 return fail(422, {
                     error: 'Pin may only contain numbers',
                     error_type: 'pin'
@@ -54,7 +54,8 @@ export const actions = {
         }
 
         if (data.has('pin') && data.get('pin') !== '') {
-            if (!(data.get('pin') as string).match("/^[0-9]+$/g")) {
+            if (!/^[0-9]+$/.test(data.get('pin') as string ?? '')) {
+                console.log(data.get('pin'));
                 return fail(422, {
                     error: 'Pin may only contain numbers',
                     error_type: 'pin'

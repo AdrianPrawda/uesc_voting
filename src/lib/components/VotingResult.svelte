@@ -33,7 +33,7 @@
 	<div class="score-primary">
 		<p class="desc-score" style="font-size: {fs}px;">{rank}</p>
 	</div>
-	<div class="score-secondary">
+	<div class="score-secondary" style="min-width: {fs * 4}px;">
 		<p class="score" style="font-size: {fs}px;">{formatScore()}</p>
 	</div>
 </div>

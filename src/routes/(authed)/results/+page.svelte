@@ -15,9 +15,12 @@
 	let results: Vote[] = [];
 
 	onMount(async function () {
+		/*
 		const resp = await fetch('/api/results');
 		const data: Vote[] = (await resp.json())?.data ?? [];
 		results = data;
+		*/
+		await updateResults();
 	});
 
 	onDestroy(() => unsubscribe);
@@ -33,6 +36,8 @@
 		if (votes) {
 			results = votes;
 		}
+
+		results.sort((a, b) => b.rank - a.rank);
 	}
 </script>
 

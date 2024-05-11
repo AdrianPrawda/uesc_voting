@@ -6,6 +6,7 @@
 	import { onMount } from 'svelte';
 	import type { Vote } from '$lib/server/votes';
 	import { moveElement } from '$lib/util';
+	import MediaQuery from 'svelte-media-queries';
 
 	const flipDurationMs: number = 200;
 
@@ -67,7 +68,7 @@
 		return Math.max(0, 10 - index);
 	}
 
-	function handleVoteChange(vote: Vote) {
+	async function handleVoteChange(vote: Vote) {
 		const src = items.findIndex((e) => e.country === vote.country);
 
 		if (src < 0) {
@@ -93,6 +94,24 @@
 		items.forEach((item, i) => {
 			item.rank = calculatePositionalRank(i);
 		});
+
+		// TODO: Extract
+		// update server
+		const payload: Vote[] = items.map((item, i) => ({
+			country: item.country,
+			rank: calculatePositionalRank(i),
+			score: item.score
+		}));
+
+		const resp = await fetch('/api/vote', {
+			method: 'POST',
+			body: JSON.stringify(payload),
+			headers: {
+				'Content-Type': 'application/json;charset=UTF-8'
+			}
+		});
+
+		console.log(`Vote changed: ${resp.status}`);
 	}
 
 	function updateRanks() {
@@ -130,28 +149,48 @@
 </script>
 
 <div class="content">
-	<section
-		use:dndzone={{ items, flipDurationMs, transformDraggedElement }}
-		on:consider={handleSort}
-		on:finalize={handleFinalize}
-		aria-label="List of participating countries"
-	>
-		{#each items as item (item.id)}
-			<div
-				class="item-container"
-				animate:flip={{ duration: flipDurationMs }}
-				aria-label="Flag of {getCountryName(item.country, 'en')}"
+	<MediaQuery query="(max-width: 1200px)" let:matches>
+		{#if matches}
+			{#each items as item (item.id)}
+				<div
+					class="item-container"
+					animate:flip={{ duration: flipDurationMs }}
+					aria-label="Flag of {getCountryName(item.country, 'en')}"
+				>
+					<svelte:component
+						this={UserVote}
+						country={item.country}
+						bind:rank={item.rank}
+						bind:score={item.score}
+						onChange={handleVoteChange}
+					/>
+				</div>
+			{/each}
+		{:else}
+			<section
+				use:dndzone={{ items, flipDurationMs, transformDraggedElement }}
+				on:consider={handleSort}
+				on:finalize={handleFinalize}
+				aria-label="List of participating countries"
 			>
-				<svelte:component
-					this={UserVote}
-					country={item.country}
-					bind:rank={item.rank}
-					bind:score={item.score}
-					onChange={handleVoteChange}
-				/>
-			</div>
-		{/each}
-	</section>
+				{#each items as item (item.id)}
+					<div
+						class="item-container"
+						animate:flip={{ duration: flipDurationMs }}
+						aria-label="Flag of {getCountryName(item.country, 'en')}"
+					>
+						<svelte:component
+							this={UserVote}
+							country={item.country}
+							bind:rank={item.rank}
+							bind:score={item.score}
+							onChange={handleVoteChange}
+						/>
+					</div>
+				{/each}
+			</section>
+		{/if}
+	</MediaQuery>
 </div>
 
 <style>

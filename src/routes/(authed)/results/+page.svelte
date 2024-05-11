@@ -15,33 +15,30 @@
 	let results: Vote[] = [];
 
 	onMount(async function () {
-		/*
-		const resp = await fetch('/api/results');
-		const data: Vote[] = (await resp.json())?.data ?? [];
-		results = data;
-		*/
 		await updateResults();
 	});
 
 	onDestroy(() => unsubscribe);
 
 	async function updateResults() {
-		const resp = await fetch('/api/results');
-		if (resp.status !== 200) {
-			console.log(`Error updating status: ${resp.status}`);
-			return;
-		}
+		try {
+			const resp = await fetch('/api/results');
+			if (resp.status !== 200) {
+				console.log(`Error updating status: ${resp.status}`);
+				return;
+			}
 
-		const votes: Vote[] | undefined = (await resp.json())?.data;
-		if (votes) {
-			results = votes;
-		}
+			const votes: Vote[] | undefined = (await resp.json())?.data;
+			if (votes) {
+				results = votes;
+			}
 
-		results.sort((a, b) => b.rank - a.rank);
+			results.sort((a, b) => b.rank - a.rank);
+		} catch (err) {
+			console.log(`Error while updating results: ${err}`);
+		}
 	}
 </script>
-
-<h1>Hello from /result</h1>
 
 {#if results.length === 0}
 	<h1>No results yet!</h1>

@@ -68,6 +68,10 @@ export function getUsername(id: string): string | undefined {
     return undefined;
 }
 
+export function getAuthenticatedUsername(token: string): string | undefined {
+    return loggedIn.get(token);
+}
+
 export function userExists(username: string): boolean {
     return users.has(username);
 }

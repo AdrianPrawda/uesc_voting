@@ -3,6 +3,9 @@
 	import { flip } from 'svelte/animate';
 	import { UserVote } from '$lib/components';
 	import { countries, getCountryName, type CountryISO } from '$lib/countries';
+	import { onMount } from 'svelte';
+	import type { Vote } from '$lib/server/votes';
+	import { moveElement } from '$lib/util';
 
 	const flipDurationMs: number = 200;
 
@@ -13,12 +16,8 @@
 		score: number;
 	}
 
-	let items: DndItem[] = countries.map((c, i) => ({
-		id: i,
-		country: c,
-		rank: calculatePositionalRank(i),
-		score: 1
-	}));
+	let items: DndItem[] = [];
+	let ranks: Map<number, CountryISO> = new Map<number, CountryISO>();
 
 	function handleSort(event: CustomEvent<DndEvent<DndItem>>) {
 		event.detail.items.forEach((item, i) => {
@@ -27,8 +26,26 @@
 		items = event.detail.items;
 	}
 
-	function handleFinalize(event: CustomEvent<DndEvent<DndItem>>) {
-		// TODO: Implement, identical to handleSort() for now
+	async function handleFinalize(event: CustomEvent<DndEvent<DndItem>>) {
+		updateRanks();
+
+		const payload: Vote[] = event.detail.items.map((item, i) => ({
+			country: item.country,
+			rank: calculatePositionalRank(i),
+			score: item.score
+		}));
+
+		// TODO: Handle error
+		const resp = await fetch('/api/vote', {
+			method: 'POST',
+			body: JSON.stringify(payload),
+			headers: {
+				'Content-Type': 'application/json;charset=UTF-8'
+			}
+		});
+
+		console.log(`Finalize: ${resp.status}`);
+
 		event.detail.items.forEach((item, i) => {
 			item.rank = calculatePositionalRank(i);
 		});
@@ -43,10 +60,72 @@
 		}
 	}
 
+	// TODO: Could be extracted
 	function calculatePositionalRank(index: number): number {
 		if (index == 0) return 12;
 		if (index == 1) return 10;
 		return Math.max(0, 10 - index);
+	}
+
+	function handleVoteChange(vote: Vote) {
+		const src = items.findIndex((e) => e.country === vote.country);
+
+		if (src < 0) {
+			console.log(`Invalid country code ${vote.country}`);
+			return;
+		}
+
+		if (vote.rank === 12) {
+			// move element to i = 0
+			items = moveElement(items, src, 0);
+		} else if (vote.rank === 10) {
+			// move element to i = 1
+			items = moveElement(items, src, 1);
+		} else if (vote.rank <= 8 && vote.rank > 0) {
+			// move element to i = 10 - rank
+			items = moveElement(items, src, 10 - vote.rank);
+		} else {
+			// move element to i = 10
+			items = moveElement(items, src, 10);
+		}
+
+		// update ranks
+		items.forEach((item, i) => {
+			item.rank = calculatePositionalRank(i);
+		});
+	}
+
+	function updateRanks() {
+		items.slice(0, 10).forEach((vote) => {
+			ranks.set(vote.rank, vote.country);
+		});
+	}
+
+	onMount(async function () {
+		const resp = await fetch('/api/vote', { method: 'GET' });
+		// TODO: Clean up messy logic
+		let val: Vote[] = (await resp.json())?.data ?? initializeVotingList();
+		if (val.length === 0) {
+			val = initializeVotingList();
+		}
+
+		items = val.map((vote, i) => ({
+			id: i,
+			country: vote.country,
+			rank: calculatePositionalRank(i),
+			score: vote.score
+		}));
+
+		updateRanks();
+	});
+
+	function initializeVotingList(): Vote[] {
+		return countries.map((country, i) => ({
+			id: i,
+			country: country,
+			rank: calculatePositionalRank(i),
+			score: 1
+		}));
 	}
 </script>
 
@@ -63,7 +142,13 @@
 				animate:flip={{ duration: flipDurationMs }}
 				aria-label="Flag of {getCountryName(item.country, 'en')}"
 			>
-				<svelte:component this={UserVote} country={item.country} rank={item.rank} />
+				<svelte:component
+					this={UserVote}
+					country={item.country}
+					bind:rank={item.rank}
+					bind:score={item.score}
+					onChange={handleVoteChange}
+				/>
 			</div>
 		{/each}
 	</section>

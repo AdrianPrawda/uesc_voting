@@ -40,5 +40,6 @@
 		background-color: var(--bg-4);
 		background: linear-gradient(250deg, var(--bg-1) 20%, var(--bg-2));
 		height: calc(100vh - 2rem);
+		margin: 0;
 	}
 </style>
